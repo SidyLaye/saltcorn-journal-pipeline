@@ -41,18 +41,28 @@ Modules → Ajouter un module → depuis git.
 
 1. Créer la table `journal_pipeline` — script `E9-journal-execution.js` :
 
-   | colonne      | type    |
-   |--------------|---------|
-   | `noeud`      | String  |
-   | `action`     | String  |
-   | `email_brut` | Integer |
-   | `lead`       | Integer |
-   | `donnees`    | String  |
-   | `horodatage` | Date    |
+   | colonne      | type    | rôle |
+   |--------------|---------|------|
+   | `email_brut` | Integer | clé de regroupement d'une exécution |
+   | `recu_le`    | Date    | réception du message (dénormalisé) |
+   | `objet`      | String  | objet du message (dénormalisé) |
+   | `noeud`      | String  | nom de l'étape |
+   | `phase`      | String  | `entree` · `etape` · `sortie` · `erreur` |
+   | `action`     | String  | ce qui a été tenté |
+   | `lead`       | Integer | lead concerné, une fois créé |
+   | `donnees`    | String  | charge utile en JSON, allégée |
+   | `horodatage` | Date    | instant de l'écriture |
 
    `email_brut` et `lead` sont des entiers simples, **pas des clés
    étrangères** : un journal qui échoue sur une contrainte d'intégrité ment
    au moment précis où on a besoin de lui.
+
+   `recu_le` et `objet` sont dénormalisés sur chaque ligne : le tableau de
+   bord groupe et affiche une exécution sans jointure.
+
+   **L'ordre de lecture est celui des `id`, pas des horodatages** : plusieurs
+   nœuds s'exécutent dans la même milliseconde et un tri sur le temps
+   mélangerait leurs lignes.
 
 2. Créer un déclencheur :
    - Nom : `enregistrer_journal`
