@@ -200,8 +200,12 @@ module.exports = {
           }
 
           const p = chargeUtile(args);
+          /* ★ Les colonnes promues sont RETIRÉES du JSON : les garder aux deux
+           *   endroits ferait diverger la colonne et le texte au premier
+           *   correctif, et on ne saurait plus lequel fait foi. */
           const {
-            noeud, phase, action, email_brut, lead, recu_le, objet, ...reste
+            noeud, phase, action, email_brut, lead, recu_le, objet,
+            source, via, http, ok, alerte, duree_ms, ...reste
           } = p;
 
           const seuil = Number(cfg.seuil_valeur) || 500;
@@ -227,6 +231,17 @@ module.exports = {
             phase: phase || null,
             action: action || null,
             lead: entier(lead),
+
+            // ── Colonnes promues ──────────────────────────────────────
+            source: source ? String(source).slice(0, 60) : null,
+            via: via ? String(via).slice(0, 120) : null,
+            http: entier(http),
+            // ★ Trois états, pas deux : `null` = « non applicable », et non
+            //   « échec ». Une étape de lecture n'a pas à se déclarer OK.
+            ok: ok === true ? true : (ok === false ? false : null),
+            alerte: alerte ? String(alerte).slice(0, 200) : null,
+            duree_ms: entier(duree_ms),
+
             donnees,
             horodatage: new Date(),
           });
