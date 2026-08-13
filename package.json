@@ -1,0 +1,7 @@
+{
+  "name": "journal-pipeline",
+  "version": "1.0.0",
+  "description": "Suivi d'exécution du workflow : déclare l'événement journal_pipeline et l'enregistre en table",
+  "main": "index.js",
+  "license": "MIT"
+}
